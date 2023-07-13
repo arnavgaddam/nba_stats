@@ -2,7 +2,8 @@ import requests
 import pandas as pd
 import json
 from player import Player
-
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 class Scraper:
     
@@ -123,11 +124,13 @@ class Scraper:
                 "PFD",
                 "PTS",
                 "PLUS_MINUS"]]
-        df.style.set_caption(playerName)
         print(df)
+        sns.set_theme()
+        sns.lineplot( x=df['GROUP_VALUE'], y=df['PTS'])
+        plt.show()
         return Player(df)
 
 
 
 scraper = Scraper()
-scraper.getstats("Justin Holiday")
+scraper.getstats("Stephen Curry")
