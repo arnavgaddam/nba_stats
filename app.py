@@ -6,7 +6,7 @@ from payloads import *
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-class Scraper:
+class NBAScraper:
     
     def __init__(self):
         self.players = None
@@ -64,6 +64,6 @@ class Scraper:
 
 
 
-scraper = Scraper()
+scraper = NBAScraper()
 curry = scraper.get_player_stats("Stephen Curry")
 print(curry.get_season_stats(14))
