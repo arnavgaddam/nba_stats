@@ -153,3 +153,31 @@ def team_history_payload(teamID, measure_type):
         "LastNGames": 0
     }
     return payload
+
+def advanced_payload(playerID, measure):
+    payload = {
+        "MeasureType": f"{measure}",
+        "PerMode": "Totals",
+        "LeagueID": "00",
+        "Season": "2022-23",
+        "SeasonType": "Regular Season",
+        "PORound": "0",
+        "TeamID": None,
+        "PlayerID": f"{playerID}",
+        "Outcome": None,
+        "Location": None,
+        "Month": "0",
+        "SeasonSegment": None,
+        "DateFrom": None,
+        "DateTo": None,
+        "OppTeamID": "0",
+        "VsConference": None,
+        "VsDivision": None,
+        "GameSegment": None,
+        "PaceAdjust": "N",
+        "Rank": "N",
+        "Period": "0",
+        "ShotClockRange": None,
+        "LastNGames": "0"
+    }
+    return payload

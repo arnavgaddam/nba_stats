@@ -53,60 +53,54 @@ class NBAScraper:
     
     def get_gamelog(self, team_name):
         url = "https://stats.nba.com/stats/teamgamelogs"
-        jsonData = requests.get(url, headers=self.headers, params=team_history_payload(self.teamIDs[team_name], "Base")).json()
+        modes = ["Base", "Advanced", "Scoring", "Four Factors"]
+        df = None
+        for mode in modes:
+            jsonData = requests.get(url, headers=self.headers, params=team_history_payload(self.teamIDs[team_name], mode)).json()
+            rows = jsonData['resultSets'][0]['rowSet']
+            columns = jsonData['resultSets'][0]['headers']
+            if(mode == "Base"):
+                df = pd.DataFrame(rows, columns=columns)
+                continue
+            df = df.merge(pd.DataFrame(rows, columns=columns))
+
+        df.sort_values("GAME_DATE")
+        return df.reset_index(drop=True)
+    
+    def get_advanced_player_stats(self, player_name):
+        url = 'https://stats.nba.com/stats/playergamelogs'
+
+        jsonData = requests.get(url, headers=self.headers, params=advanced_payload(self.players[player_name], "Base")).json()
         rows = jsonData['resultSets'][0]['rowSet']
         columns = jsonData['resultSets'][0]['headers']
-        df = pd.DataFrame(rows, columns=columns)
+        basedf = pd.DataFrame(rows, columns=columns)
 
-        jsonData = requests.get(url, headers=self.headers, params=team_history_payload(self.teamIDs[team_name], "Advanced")).json()
+        jsonData = requests.get(url, headers=self.headers, params=advanced_payload(self.players[player_name], "Usage")).json()
         rows = jsonData['resultSets'][0]['rowSet']
         columns = jsonData['resultSets'][0]['headers']
-        df2 = pd.DataFrame(rows, columns=columns)
+        usagedf = pd.DataFrame(rows, columns=columns)
 
-        jsonData = requests.get(url, headers=self.headers, params=team_history_payload(self.teamIDs[team_name], "Scoring")).json()
+
+        jsonData = requests.get(url, headers=self.headers, params=advanced_payload(self.players[player_name], "Scoring")).json()
         rows = jsonData['resultSets'][0]['rowSet']
         columns = jsonData['resultSets'][0]['headers']
-        df3 = pd.DataFrame(rows, columns=columns)
+        scoringdf = pd.DataFrame(rows, columns=columns)
 
-        jsonData = requests.get(url, headers=self.headers, params=team_history_payload(self.teamIDs[team_name], "Four Factors")).json()
+        jsonData = requests.get(url, headers=self.headers, params=advanced_payload(self.players[player_name], "Advanced")).json()
         rows = jsonData['resultSets'][0]['rowSet']
         columns = jsonData['resultSets'][0]['headers']
-        df4 = pd.DataFrame(rows, columns=columns)
+        advancedf = pd.DataFrame(rows, columns=columns)
 
-        jsonData = requests.get(url, headers=self.headers, params=team_history_payload(self.teamIDs[team_name], "Misc")).json()
-        rows = jsonData['resultSets'][0]['rowSet']
-        columns = jsonData['resultSets'][0]['headers']
-        df4 = pd.DataFrame(rows, columns=columns)
-        game_data = df.merge(df2.merge(df3.merge(df4))).sort_values("GAME_DATE")
+        print(pd.concat([basedf, usagedf, scoringdf, advancedf], axis=1))
 
-        return game_data.reset_index(drop=True)
         
 
 
+if __name__ == "__main__":
+    scraper = NBAScraper()
+    # curry = scraper.get_player_stats("Stephen Curry")
+    # print(curry.get_season_stats(14))
 
-scraper = NBAScraper()
-curry = scraper.get_player_stats("Stephen Curry")
-# print(curry.get_season_stats(14))
-heat_log = scraper.get_gamelog("Miami Heat")
-
-
-opponents = []
-arena = []
-for matchup in heat_log.MATCHUP:
-    data = matchup.split()
-    opponents.append(data[-1])
-    if '@' in data:
-        arena.append(data[-1])
-        # print("Away Game")
-    else:
-        arena.append(data[0])
-        # print("Home Game")
-heat_log['MATCHUP'] = opponents
-heat_log['ARENA'] = arena
+    scraper.get_advanced_player_stats("Jimmy Butler")
 
 
-heat_log['target'] = heat_log['WL'].shift(-1)
-heat_log['target'][pd.isnull(heat_log['target'])] = "-"
-heat_log['target'] = heat_log['target'].astype('category').cat.codes
-heat_log = heat_log.drop(['TEAM_ID', 'TEAM_NAME'], axis=1)
-print(heat_log)
