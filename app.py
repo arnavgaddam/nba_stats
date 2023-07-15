@@ -67,31 +67,25 @@ class NBAScraper:
         df.sort_values("GAME_DATE")
         return df.reset_index(drop=True)
     
+    def get_years_played(self, player_name):
+        url = "https://stats.nba.com/stats/playercareerstats"
+        jsonData = requests.get(url, headers=self.headers, params=year_played_payload(self.players[player_name])).json()
+        return list(set([season[1] for season in jsonData['resultSets'][0]['rowSet']]))
+    
     def get_advanced_player_stats(self, player_name):
         url = 'https://stats.nba.com/stats/playergamelogs'
+        measures = ['Base', 'Usage', 'Scoring', 'Advanced', 'Misc']
+        dfs = []
+        created = False
+        years_played = self.get_years_played(player_name)
+        for season in years_played:
+            for measure in measures:
+                jsonData = requests.get(url, headers=self.headers, params=advanced_payload(self.players[player_name], measure, season)).json()
+                rows = jsonData['resultSets'][0]['rowSet']
+                columns = jsonData['resultSets'][0]['headers']
+                dfs.append(pd.DataFrame(rows, columns=columns))
 
-        jsonData = requests.get(url, headers=self.headers, params=advanced_payload(self.players[player_name], "Base")).json()
-        rows = jsonData['resultSets'][0]['rowSet']
-        columns = jsonData['resultSets'][0]['headers']
-        basedf = pd.DataFrame(rows, columns=columns)
-
-        jsonData = requests.get(url, headers=self.headers, params=advanced_payload(self.players[player_name], "Usage")).json()
-        rows = jsonData['resultSets'][0]['rowSet']
-        columns = jsonData['resultSets'][0]['headers']
-        usagedf = pd.DataFrame(rows, columns=columns)
-
-
-        jsonData = requests.get(url, headers=self.headers, params=advanced_payload(self.players[player_name], "Scoring")).json()
-        rows = jsonData['resultSets'][0]['rowSet']
-        columns = jsonData['resultSets'][0]['headers']
-        scoringdf = pd.DataFrame(rows, columns=columns)
-
-        jsonData = requests.get(url, headers=self.headers, params=advanced_payload(self.players[player_name], "Advanced")).json()
-        rows = jsonData['resultSets'][0]['rowSet']
-        columns = jsonData['resultSets'][0]['headers']
-        advancedf = pd.DataFrame(rows, columns=columns)
-
-        print(pd.concat([basedf, usagedf, scoringdf, advancedf], axis=1))
+        return pd.concat(dfs, axis=0).drop(['PLAYER_NAME', 'PLAYER_ID', 'NICKNAME', 'TEAM_ID', 'TEAM_NAME'], axis=1)
 
         
 
@@ -101,6 +95,9 @@ if __name__ == "__main__":
     # curry = scraper.get_player_stats("Stephen Curry")
     # print(curry.get_season_stats(14))
 
-    scraper.get_advanced_player_stats("Jimmy Butler")
+    butler = scraper.get_advanced_player_stats("Jimmy Butler")
+    print(butler)
+    print(butler.columns)
+    
 
 

@@ -1,5 +1,5 @@
 from app import NBAScraper
-
+import pandas as pd
 
 scraper = NBAScraper()
 heat_log = scraper.get_gamelog("Miami Heat")
