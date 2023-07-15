@@ -127,3 +127,29 @@ def team_payload(playerID):
         "LastNGames": 0
         }
     return payload
+
+def team_history_payload(teamID, measure_type):
+    payload = {
+        "MeasureType": f"{measure_type}", #can be either Advanced, Base, Scoring, Misc, Four Factors
+        "PerMode": "Totals",
+        "LeagueID": "00",
+        "Season": "2022-23",
+        "SeasonType": "Regular Season",
+        "PORound": 0,
+        "TeamID": {teamID},
+        "PlayerID": None,
+        "Outcome": None,
+        "Location": None,
+        "Month": 0,
+        "SeasonSegment": None,
+        "DateFrom": None,
+        "DateTo": None,
+        "OppTeamID": 0,
+        "VsConference": None,
+        "VsDivision": None,
+        "GameSegment": None,
+        "Period": 0,
+        "ShotClockRange": None,
+        "LastNGames": 0
+    }
+    return payload
