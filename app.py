@@ -70,22 +70,22 @@ class NBAScraper:
     def get_years_played(self, player_name):
         url = "https://stats.nba.com/stats/playercareerstats"
         jsonData = requests.get(url, headers=self.headers, params=year_played_payload(self.players[player_name])).json()
-        return list(set([season[1] for season in jsonData['resultSets'][0]['rowSet']]))
+        return sorted(list(set([season[1] for season in jsonData['resultSets'][0]['rowSet']])))
     
     def get_advanced_player_stats(self, player_name):
         url = 'https://stats.nba.com/stats/playergamelogs'
-        measures = ['Base', 'Usage', 'Scoring', 'Advanced', 'Misc']
+        # ['Base', 'Usage', 'Scoring', 'Advanced', 'Misc']
+        measures = ['Base', 'Advanced', 'Usage', 'Scoring']
         dfs = []
-        created = False
         years_played = self.get_years_played(player_name)
-        for season in years_played:
+        for season in years_played[-3:-1]:
             for measure in measures:
                 jsonData = requests.get(url, headers=self.headers, params=advanced_payload(self.players[player_name], measure, season)).json()
                 rows = jsonData['resultSets'][0]['rowSet']
                 columns = jsonData['resultSets'][0]['headers']
                 dfs.append(pd.DataFrame(rows, columns=columns))
 
-        return pd.concat(dfs, axis=0).drop(['PLAYER_NAME', 'PLAYER_ID', 'NICKNAME', 'TEAM_ID', 'TEAM_NAME'], axis=1)
+        return pd.concat(dfs, axis=0).drop(['PLAYER_NAME', 'PLAYER_ID', 'NICKNAME', 'TEAM_ID', 'TEAM_NAME', 'GAME_ID'], axis=1)
 
         
 
@@ -97,7 +97,7 @@ if __name__ == "__main__":
 
     butler = scraper.get_advanced_player_stats("Jimmy Butler")
     print(butler)
-    print(butler.columns)
+    print(butler.memory_usage(index=True).sum())
     
 
 
