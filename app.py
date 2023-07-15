@@ -76,17 +76,23 @@ class NBAScraper:
         url = 'https://stats.nba.com/stats/playergamelogs'
         # ['Base', 'Usage', 'Scoring', 'Advanced', 'Misc']
         measures = ['Base', 'Advanced', 'Usage', 'Scoring']
-        dfs = []
+        seasondfs = []
         years_played = self.get_years_played(player_name)
-        for season in years_played[-3:-1]:
+        if(len(years_played) >= 4):
+            years_played = years_played[-3:]
+        for season in years_played:
+            measuredfs = []
             for measure in measures:
                 jsonData = requests.get(url, headers=self.headers, params=advanced_payload(self.players[player_name], measure, season)).json()
                 rows = jsonData['resultSets'][0]['rowSet']
                 columns = jsonData['resultSets'][0]['headers']
-                dfs.append(pd.DataFrame(rows, columns=columns))
-
-        return pd.concat(dfs, axis=0).drop(['PLAYER_NAME', 'PLAYER_ID', 'NICKNAME', 'TEAM_ID', 'TEAM_NAME', 'GAME_ID'], axis=1)
-
+                measuredfs.append(pd.DataFrame(rows, columns=columns))
+            seasondfs.append(pd.concat(measuredfs, axis=1))
+        df = pd.concat(seasondfs, axis=0)
+        df = df.loc[:,~df.columns.duplicated()].copy().drop(['PLAYER_NAME', 'PLAYER_ID', 'NICKNAME', 'TEAM_ID', 'TEAM_NAME', 'GAME_ID'], axis=1).sort_values("GAME_DATE").reset_index(drop=True)
+        df['OPPONENT'] = [matchup.split()[-1] for matchup in df.MATCHUP]
+        df['HOME'] = [False if "@" in x.split() else True for x in df.MATCHUP]
+        return df
         
 
 
@@ -96,8 +102,7 @@ if __name__ == "__main__":
     # print(curry.get_season_stats(14))
 
     butler = scraper.get_advanced_player_stats("Jimmy Butler")
-    print(butler)
-    print(butler.memory_usage(index=True).sum())
+    butler.to_csv('out.csv')
     
 
 
