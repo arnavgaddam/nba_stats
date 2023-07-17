@@ -103,7 +103,7 @@ if __name__ == "__main__":
     # curry = scraper.get_player_stats("Stephen Curry")
     # print(curry.get_season_stats(14))
 
-    butler = scraper.get_advanced_player_stats("James Harden")
+    butler = scraper.get_advanced_player_stats("Stephen Curry")
     butler.to_csv('butler.csv', index=False)
     print(butler)
     
