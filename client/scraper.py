@@ -1,7 +1,6 @@
 import requests 
 import pandas as pd
 import json
-from player import Player
 from payloads import *
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -49,7 +48,7 @@ class NBAScraper:
         # # sns.lineplot( x=df['GROUP_VALUE'], y=df['PTS'])
         # sns.lineplot(data=df, x="GROUP_VALUE", y='FGM')
         # plt.show()
-        return Player(df)
+        return df
     
     def get_gamelog(self, team_name):
         url = "https://stats.nba.com/stats/teamgamelogs"

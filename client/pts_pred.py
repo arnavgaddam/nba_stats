@@ -67,6 +67,5 @@ class Predictor:
 
 if __name__ == "__main__":
     scraper = NBAScraper()
-    butler = scraper.get_advanced_player_stats("Stephen Curry")
     pred = Predictor()
-    pred.train_model("ast", playerdf=butler)
+    pred.train_model("pts", playerdf=scraper.get_advanced_player_stats("LeBron James"))
