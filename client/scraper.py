@@ -1,7 +1,6 @@
 import requests 
 import pandas as pd
 import json
-from player import Player
 from payloads import *
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -49,7 +48,7 @@ class NBAScraper:
         # # sns.lineplot( x=df['GROUP_VALUE'], y=df['PTS'])
         # sns.lineplot(data=df, x="GROUP_VALUE", y='FGM')
         # plt.show()
-        return Player(df)
+        return df
     
     def get_gamelog(self, team_name):
         url = "https://stats.nba.com/stats/teamgamelogs"
@@ -75,12 +74,12 @@ class NBAScraper:
     def get_advanced_player_stats(self, player_name):
         url = 'https://stats.nba.com/stats/playergamelogs'
         # ['Base', 'Usage', 'Scoring', 'Advanced', 'Misc']
-        measures = ['Base', 'Advanced', 'Usage', 'Scoring']
+        measures = ['Base','Usage', 'Advanced', 'Scoring']
         seasondfs = []
         years_played = self.get_years_played(player_name)
-        if(len(years_played) >= 4):
-            years_played = years_played[-3:]
-        for season in years_played:
+        # if(len(years_played) >= 4):
+        #     years_played = years_played[-3:]
+        for season in years_played[-1:]:
             measuredfs = []
             for measure in measures:
                 jsonData = requests.get(url, headers=self.headers, params=advanced_payload(self.players[player_name], measure, season)).json()
@@ -91,7 +90,9 @@ class NBAScraper:
         df = pd.concat(seasondfs, axis=0)
         df = df.loc[:,~df.columns.duplicated()].copy().drop(['PLAYER_NAME', 'PLAYER_ID', 'NICKNAME', 'TEAM_ID', 'TEAM_NAME', 'GAME_ID'], axis=1).sort_values("GAME_DATE").reset_index(drop=True)
         df['OPPONENT'] = [matchup.split()[-1] for matchup in df.MATCHUP]
-        df['HOME'] = [False if "@" in x.split() else True for x in df.MATCHUP]
+        df['HOME'] = [0 if "@" in x.split() else 1 for x in df.MATCHUP]
+        df = df.drop('MATCHUP', axis=1)
+
         return df
         
 
@@ -101,8 +102,9 @@ if __name__ == "__main__":
     # curry = scraper.get_player_stats("Stephen Curry")
     # print(curry.get_season_stats(14))
 
-    butler = scraper.get_advanced_player_stats("Jimmy Butler")
-    butler.to_csv('out.csv')
+    butler = scraper.get_advanced_player_stats("Stephen Curry")
+    butler.to_csv('butler.csv', index=False)
+    print(butler)
     
 
 
