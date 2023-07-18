@@ -13,6 +13,7 @@ class Predictor:
                       'ast': 'next_ast',
                       'reb': 'next_reb',
                       'fg3m': 'next_fg3m'}
+        self.model = None
         
     def train_model(self, stat, playerdf=None):
         df = pd.read_csv('butler.csv')
@@ -56,7 +57,6 @@ class Predictor:
             return pd.concat(allpreds)
 
         predictions3 = backtest(df, svrmod, predictors3)
-        print(predictions3)
 
         from sklearn.metrics import mean_squared_error
         from sklearn.metrics import mean_absolute_error

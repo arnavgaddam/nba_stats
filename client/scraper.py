@@ -74,7 +74,7 @@ class NBAScraper:
     def get_advanced_player_stats(self, player_name):
         url = 'https://stats.nba.com/stats/playergamelogs'
         # ['Base', 'Usage', 'Scoring', 'Advanced', 'Misc']
-        measures = ['Base','Usage', 'Misc', 'Advanced', 'Scoring']
+        measures = ['Base','Usage', 'Advanced', 'Scoring']
         seasondfs = []
         years_played = self.get_years_played(player_name)
         # if(len(years_played) >= 4):
