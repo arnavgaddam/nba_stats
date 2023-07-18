@@ -1,6 +1,6 @@
 from predictor import Predictor
 from scraper import NBAScraper
-from flask import Flask, url_for, render_template, request, jsonify, make_response
+from flask import Flask, url_for, render_template, request, jsonify, make_response, redirect
 import requests
 
 
@@ -10,23 +10,35 @@ import requests
 # predictor.train_model('pts', scraper.get_advanced_player_stats(playername))
 
 app = Flask(__name__)
+scraper = NBAScraper()
 
-
-@app.route("/")
+@app.route("/", methods=['GET', 'POST'])
 def home():
+    if request.method == 'POST':
+        print(request.form.to_dict())
+        return redirect(url_for('prediction'))
     return render_template("index.html")
 
 
-@app.route("/search", methods = ['POST'])
+@app.route("/search", methods = ['GET', 'POST'])
 def search():
-    req = request.get_json()
-    print(req)
-    res = make_response(jsonify({"message": "JSON receive"}), 200)
-    return res
+    if request.method == 'POST':
+        print(request.form.to_dict()['query'])
+        return redirect(url_for('prediction', playerID=scraper.player_to_id(request.form.to_dict()['query'].title())))
+    # req = request.get_json()
+    # res = make_response(jsonify({"playerID": scraper.player_to_id(req['playerName'].title())}), 200)
+    return "<p> blank </p>"
 
-@app.route("/prediction", methods=['POST', 'GET'])
-def predict_stats():
-    return 
+@app.route("/prediction/<playerID>", methods=['POST', 'GET'])
+def prediction(playerID):
+    return render_template('prediction.html', player=0)
+
+@app.route("/livesearch", methods= ['GET'])
+def livesearch():
+    return jsonify([
+        "James Harden", 
+        "Stephen Curry"
+    ])
 
 
 

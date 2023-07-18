@@ -35,7 +35,10 @@ class NBAScraper:
         columns = jsonData['resultSets'][0]['headers']
         df = pd.DataFrame(rows, columns=columns)[['TEAM_ID', 'TEAM_NAME']]
         for row in rows:
-            self.teamIDs[row[1]] = row[0]            
+            self.teamIDs[row[1]] = row[0]     
+
+    def player_to_id(self, playerName):
+        return self.players[playerName]               
 
     def get_player_stats(self, playerName):
         url = "https://stats.nba.com/stats/playerdashboardbyyearoveryearcombined"
@@ -66,23 +69,26 @@ class NBAScraper:
         df.sort_values("GAME_DATE")
         return df.reset_index(drop=True)
     
-    def get_years_played(self, player_name):
+    def get_years_played(self, playerID):
         url = "https://stats.nba.com/stats/playercareerstats"
-        jsonData = requests.get(url, headers=self.headers, params=year_played_payload(self.players[player_name])).json()
+        jsonData = requests.get(url, headers=self.headers, params=year_played_payload(playerID)).json()
         return sorted(list(set([season[1] for season in jsonData['resultSets'][0]['rowSet']])))
     
-    def get_advanced_player_stats(self, player_name):
+    def get_advanced_player_stats(self, player_name="None", playerID=None):
         url = 'https://stats.nba.com/stats/playergamelogs'
+        scrapeID = self.player_to_id(player_name)
+        if playerID is not None:
+            scrapeID = playerID
         # ['Base', 'Usage', 'Scoring', 'Advanced', 'Misc']
         measures = ['Base','Usage', 'Advanced', 'Scoring']
         seasondfs = []
-        years_played = self.get_years_played(player_name)
+        years_played = self.get_years_played(scrapeID)
         # if(len(years_played) >= 4):
         #     years_played = years_played[-3:]
         for season in years_played[-1:]:
             measuredfs = []
             for measure in measures:
-                jsonData = requests.get(url, headers=self.headers, params=advanced_payload(self.players[player_name], measure, season)).json()
+                jsonData = requests.get(url, headers=self.headers, params=advanced_payload(scrapeID, measure, season)).json()
                 rows = jsonData['resultSets'][0]['rowSet']
                 columns = jsonData['resultSets'][0]['headers']
                 measuredfs.append(pd.DataFrame(rows, columns=columns))
