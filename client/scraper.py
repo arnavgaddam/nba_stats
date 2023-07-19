@@ -38,7 +38,12 @@ class NBAScraper:
             self.teamIDs[row[1]] = row[0]     
 
     def player_to_id(self, playerName):
-        return self.players[playerName]               
+        return self.players[playerName]     
+
+    def id_to_player(self, playerID):
+        inv_map = {v: k for k, v in self.players.items()}
+        return inv_map[playerID]
+         
 
     def get_player_stats(self, playerName):
         url = "https://stats.nba.com/stats/playerdashboardbyyearoveryearcombined"

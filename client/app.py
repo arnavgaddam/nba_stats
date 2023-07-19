@@ -48,7 +48,7 @@ def prediction(playerID):
     task.start()
     tasks.append(task)
     results.append(None)
-    return render_template('prediction.html', taskID=new_task_id)
+    return render_template('prediction.html', taskID=new_task_id, playerID=playerID, playerName=scraper.id_to_player(int(playerID)))
 
 def run_model(task_id, results, playerID):
     pred = Predictor()
@@ -65,7 +65,7 @@ def run_model(task_id, results, playerID):
 
 @app.route("/task/<int:task_id>", methods=["GET"])
 def task_status(task_id):
-    assert 0 <= task_id < len(tasks)
+    # assert 0 <= task_id < len(tasks)
     if tasks[task_id].is_alive():
         return jsonify({'status': 'running'})
     try:
