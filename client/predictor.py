@@ -64,7 +64,7 @@ class Predictor:
         print(mean_squared_error(predictions3['actual'], predictions3['prediction']))
         print(mean_absolute_error(predictions3['actual'], predictions3['prediction']))
 
-        return svrmod.predict(df[-1:][predictors3])
+        return svrmod.predict(df[-1:][predictors3])[0]
 
 
 if __name__ == "__main__":

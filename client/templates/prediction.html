@@ -11,20 +11,28 @@
     {% endblock %}
     <p id="player"></p>
     <p> {{ player }}</p>
-    <button onclick="ss();"> BUTTOn </button>
     <script> 
+
+    let intervalId = setInterval(ss, 1000);
+    let resultArray;
     function ss(){
-      var index = "{{player}}"
-      var url = "/task/{{player}}"
+      var url = "/task/{{taskID}}"
       fetch(url)
         .then(data => {
         return data.json();
         })
         .then(post => {
-        window.alert(post["status"])
-
+        
+        if(post['status'] == "finished"){
+          clearInterval(intervalId);
+          window.alert(post['result'][0]);
+          resultArray = post['result'];
+        }
         });
     }
+
+    
+
     
 
 

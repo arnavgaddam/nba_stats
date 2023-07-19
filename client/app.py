@@ -44,15 +44,24 @@ def prediction(playerID):
     # pred = Predictor()
     # result = pred.train_model('pts', playerdf=scraper.get_advanced_player_stats(playerID=playerID)) 
     new_task_id = len(tasks)
-    task = Thread(target=do_work, kwargs={'playerID': playerID, 'task_id': new_task_id, 'results': results})
+    task = Thread(target=run_model, kwargs={'playerID': playerID, 'task_id': new_task_id, 'results': results})
     task.start()
     tasks.append(task)
     results.append(None)
-    return render_template('prediction.html', player=new_task_id)
+    return render_template('prediction.html', taskID=new_task_id)
 
-def do_work(task_id, results, playerID):
+def run_model(task_id, results, playerID):
     pred = Predictor()
-    results[task_id] = f"finished task {pred.train_model('pts', playerdf=scraper.get_advanced_player_stats(playerID=playerID))}"
+    playerdf=scraper.get_advanced_player_stats(playerID=playerID)
+    results[task_id] = [
+        pred.train_model('pts', playerdf),
+        pred.train_model('ast', playerdf),
+        pred.train_model('reb', playerdf),
+        pred.train_model('fg3m', playerdf)
+
+    ]
+        
+    
 
 @app.route("/task/<int:task_id>", methods=["GET"])
 def task_status(task_id):
