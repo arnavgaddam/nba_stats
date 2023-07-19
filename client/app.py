@@ -1,5 +1,6 @@
 from predictor import Predictor
 from scraper import NBAScraper
+from threading import Thread
 from flask import Flask, url_for, render_template, request, jsonify, make_response, redirect
 import requests
 
@@ -11,6 +12,8 @@ import requests
 
 app = Flask(__name__)
 scraper = NBAScraper()
+
+    
 
 @app.route("/", methods=['GET', 'POST'])
 def home():
@@ -31,14 +34,9 @@ def search():
 
 @app.route("/prediction/<playerID>", methods=['POST', 'GET'])
 def prediction(playerID):
-    return render_template('prediction.html', player=0)
-
-@app.route("/livesearch", methods= ['GET'])
-def livesearch():
-    return jsonify([
-        "James Harden", 
-        "Stephen Curry"
-    ])
+    pred = Predictor()
+    result = pred.train_model('pts', playerdf=scraper.get_advanced_player_stats(playerID=playerID))
+    return render_template('prediction.html', player=result)
 
 
 

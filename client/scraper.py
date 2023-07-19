@@ -74,7 +74,7 @@ class NBAScraper:
         jsonData = requests.get(url, headers=self.headers, params=year_played_payload(playerID)).json()
         return sorted(list(set([season[1] for season in jsonData['resultSets'][0]['rowSet']])))
     
-    def get_advanced_player_stats(self, player_name="None", playerID=None):
+    def get_advanced_player_stats(self, player_name="Stephen Curry", playerID=None):
         url = 'https://stats.nba.com/stats/playergamelogs'
         scrapeID = self.player_to_id(player_name)
         if playerID is not None:
