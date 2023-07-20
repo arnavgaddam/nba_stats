@@ -189,3 +189,21 @@ def year_played_payload(playerID):
         "LeagueID": "00"
     }
     return payload
+
+def league_players_payload():
+    payload = {
+        "LeagueID": "00",
+        "Season": "2023-24",
+        "Historical": 1,
+        "TeamID": 0,
+        "Country": None,
+        "College": None,
+        "DraftYear": None,
+        "DraftPick": None,
+        "PlayerPosition": None,
+        "Height": None,
+        "Weight": None,
+        "Active": None,
+        "AllStar": None
+    }
+    return payload
