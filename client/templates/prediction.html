@@ -12,10 +12,36 @@
     {% block content %}
     {% include "search.html" %}
     {% endblock %}
-    <div class="media" style="padding: 50px;">
-      <img class="mr-3" src="https://cdn.nba.com/headshots/nba/latest/1040x760/{{playerID}}.png" alt="Generic placeholder image" style="width: 128px; height: auto;">
+    <div class="media" style="padding: 30px;">
       <div class="media-body">
-        <h5 class="mt-0"> {{playerName}} </h5>
+        <div class="card" style="width: 18rem;">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm">
+                <img src="https://cdn.nba.com/headshots/nba/latest/1040x760/{{playerID}}.png" alt="Generic placeholder image" style="max-width: 128px; height: auto; padding-top: 20px">
+              </div>
+              <div class="col-sm">
+                <div class="row">
+                <img src="https://cdn.nba.com/logos/nba/{{ playerBio['teamID'] }}/primary/L/logo.svg" alt="Generic placeholder image" style="max-width: 96px; height: auto; padding-top: 5px;">
+              </div>
+              <div class="row">
+                <p style="padding-left: 10px;"> {{ playerBio['team']}}</p>
+              </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="card-body" style="padding-top: 0px;">
+            <h5 class="card-title"> {{playerBio['name'] }} </h5>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">Jersey #     {{playerBio['number'] }}</li>
+            <li class="list-group-item">Position     {{playerBio['position'] }}</li>
+            <li class="list-group-item">Height     {{playerBio['height'] }}</li>
+            <li class="list-group-item">Weight     {{playerBio['weight'] }}</li>
+            <li class="list-group-item">Country     {{playerBio['country'] }}</li>
+          </ul>
+        </div>
         <div class="container">
           <div class="row" style="padding: 10px">
             <div id='ptsoutput' class="col-sm">
@@ -43,6 +69,8 @@
         </div>
       </div>
     </div>
+
+
 
     <script> 
 

@@ -48,7 +48,12 @@ def prediction(playerID):
     task.start()
     tasks.append(task)
     results.append(None)
-    return render_template('prediction.html', taskID=new_task_id, playerID=playerID, playerName=scraper.id_to_player(int(playerID)))
+    return render_template('prediction.html', 
+                           taskID=new_task_id, 
+                           playerID=playerID, 
+                           playerBio = scraper.get_player_bio(int(playerID)),
+                           playerName=scraper.id_to_player(int(playerID)))
+                            
 
 def run_model(task_id, results, playerID):
     pred = Predictor()

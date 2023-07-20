@@ -14,6 +14,7 @@ class NBAScraper:
            "Referer": 'https://www.nba.com/'}
         self.init_players()
         self.init_teams()
+        self.get_all_players()
         
 
 
@@ -57,6 +58,27 @@ class NBAScraper:
         # sns.lineplot(data=df, x="GROUP_VALUE", y='FGM')
         # plt.show()
         return df
+    
+    def get_all_players(self):
+        self.player_index = {}
+        url = "https://stats.nba.com/stats/playerindex"
+        jsonData = requests.get(url, headers=self.headers, params=league_players_payload()).json()
+        rows = jsonData['resultSets'][0]['rowSet']
+        for row in rows:
+            self.player_index[row[0]] = {
+                "name": f"{row[2]} {row[1]}",
+                "team": f"{row[7]} {row[8]}",
+                "teamID": row[4],
+                "number": row[10],
+                "position": row[11],
+                "height": row[12],
+                "weight": row[13],
+                "country": row[15]
+            }
+        return 
+    
+    def get_player_bio(self, playerID):
+        return self.player_index[playerID]
     
     def get_gamelog(self, team_name):
         url = "https://stats.nba.com/stats/teamgamelogs"
@@ -113,9 +135,10 @@ if __name__ == "__main__":
     # curry = scraper.get_player_stats("Stephen Curry")
     # print(curry.get_season_stats(14))
 
-    butler = scraper.get_advanced_player_stats("Stephen Curry")
-    butler.to_csv('butler.csv', index=False)
-    print(butler)
+    # butler = scraper.get_advanced_player_stats("Stephen Curry")
+    # butler.to_csv('butler.csv', index=False)
+    # print(butler)
+    print(scraper.get_player_bio(78650))
     
 
 
