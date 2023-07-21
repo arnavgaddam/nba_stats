@@ -40,7 +40,7 @@ tasks = []
 results = []
 
 @app.route("/prediction/<playerID>", methods=['POST', 'GET'])
-def prediction(playerID):
+def prediction(playerID): 
     # pred = Predictor()
     # result = pred.train_model('pts', playerdf=scraper.get_advanced_player_stats(playerID=playerID)) 
     new_task_id = len(tasks)
@@ -48,11 +48,13 @@ def prediction(playerID):
     task.start()
     tasks.append(task)
     results.append(None)
+    playerHistory = scraper.get_player_stats(playerID).values.tolist()
     return render_template('prediction.html', 
                            taskID=new_task_id, 
                            playerID=playerID, 
                            playerBio = scraper.get_player_bio(int(playerID)),
-                           playerName=scraper.id_to_player(int(playerID)))
+                           playerName=scraper.id_to_player(int(playerID)),
+                           playerHistory=playerHistory)
                             
 
 def run_model(task_id, results, playerID):
