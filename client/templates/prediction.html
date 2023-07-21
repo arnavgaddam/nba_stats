@@ -12,63 +12,21 @@
     {% block content %}
     {% include "search.html" %}
     {% endblock %}
-    <div class="media" style="padding: 30px;">
-      <div class="media-body">
-        <div class="card" style="width: 18rem;">
-          <div class="container">
-            <div class="row">
-              <div class="col-sm">
-                <img src="https://cdn.nba.com/headshots/nba/latest/1040x760/{{playerID}}.png" alt="Generic placeholder image" style="max-width: 128px; height: auto; padding-top: 20px">
-              </div>
-              <div class="col-sm">
-                <div class="row">
-                <img src="https://cdn.nba.com/logos/nba/{{ playerBio['teamID'] }}/primary/L/logo.svg" alt="Generic placeholder image" style="max-width: 96px; height: auto; padding-top: 5px;">
-              </div>
-              <div class="row">
-                <p style="padding-left: 10px;"> {{ playerBio['team']}}</p>
-              </div>
 
-              </div>
-            </div>
-          </div>
-          <div class="card-body" style="padding-top: 0px;">
-            <h5 class="card-title"> {{playerBio['name'] }} </h5>
-          </div>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">Jersey #     {{playerBio['number'] }}</li>
-            <li class="list-group-item">Position     {{playerBio['position'] }}</li>
-            <li class="list-group-item">Height     {{playerBio['height'] }}</li>
-            <li class="list-group-item">Weight     {{playerBio['weight'] }}</li>
-            <li class="list-group-item">Country     {{playerBio['country'] }}</li>
-          </ul>
-        </div>
-        <div class="container">
-          <div class="row" style="padding: 10px">
-            <div id='ptsoutput' class="col-sm">
-              Loading predicted points...
-              <div style="padding: 10px"><div id="loader" class="loader"></div></div>
-
-            </div>
-            <div id='astoutput' class="col-sm">
-              Loading predicted assists...
-              <div style="padding: 10px"><div id="loader" class="loader"></div></div>
-
-              
-            </div>
-            <div id='reboutput' class="col-sm">
-              Loading predicted rebounds...
-              <div style="padding: 10px"><div id="loader" class="loader"></div></div>
-
-            </div>
-            <div id='fg3output' class="col-sm">
-              Loading predicted 3s made...
-              <div style="padding: 10px"><div id="loader" class="loader"></div></div>
-
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="row mh-75">
+    
+    <div class="col-3">
+    {% block card %}
+    {% include "playercard.html" %}
+    {% endblock %}
     </div>
+
+    {% block results %}
+    {% include "resultsview.html" %}
+    {% endblock %}
+
+    </div>
+
 
 
 
@@ -88,14 +46,77 @@
           clearInterval(intervalId);
           // window.alert(post['result'][0]);
           resultArray = post['result'];
-          document.getElementById("ptsoutput").innerHTML = parseFloat(resultArray[0]).toFixed() + " Points Made"
-          document.getElementById("astoutput").innerHTML = parseFloat(resultArray[1]).toFixed() + " Assists"
-          document.getElementById("reboutput").innerHTML = parseFloat(resultArray[2]).toFixed() + " Rebounds"
-          document.getElementById("fg3output").innerHTML = parseFloat(resultArray[3]).toFixed() + " 3s Made"
-          document.getElementById("loader").style.display = "none"
+          document.getElementById("ptsoutput").innerHTML = parseFloat(resultArray[0]).toFixed();
+          document.getElementById("astoutput").innerHTML = parseFloat(resultArray[1]).toFixed();
+          document.getElementById("reboutput").innerHTML = parseFloat(resultArray[2]).toFixed();
+          document.getElementById("fg3output").innerHTML = parseFloat(resultArray[3]).toFixed();
+          document.getElementById("ptsdisplay").style.display = "block";
+          document.getElementById("astdisplay").style.display = "block";
+          document.getElementById("rebdisplay").style.display = "block";
+          document.getElementById("fg3display").style.display = "block";
+          document.getElementById("loader").style.display = "none";
+          document.getElementById("loader1").style.display = "none";
+          document.getElementById("loader2").style.display = "none";
+          document.getElementById("loader3").style.display = "none";
+          document.getElementById("rebload").innerHTML = "";
+          document.getElementById("ptsload").innerHTML = "";
+          document.getElementById("astload").innerHTML = "";
+          document.getElementById("fg3load").innerHTML = "";
+
+
+
+
+
+
+
+
         }
         });
     }
+
+    function createTable(tableData, headings) {
+      var table = document.createElement('table');
+      table.className = "table table-striped table-responsive table-hover";
+      table.style.maxHeight = "23rem";
+      table.style.paddingTop = "20px";
+      var tableHead = document.createElement('thead');
+      var tableBody = document.createElement('tbody');
+
+      tableData.forEach(function(rowData) {
+        var row = document.createElement('tr');
+
+        rowData.forEach(function(cellData) {
+          var cell = document.createElement('td');
+          cell.appendChild(document.createTextNode(cellData));
+          row.appendChild(cell);
+        });
+
+        tableBody.appendChild(row);
+      });
+
+      var row = document.createElement('tr');
+      for(const i in headings){
+        var cell = document.createElement('td');
+        cell.appendChild(document.createTextNode(headings[i]));
+        row.appendChild(cell);
+      }
+      tableHead.appendChild(row);
+      
+      table.appendChild(tableHead);
+      table.appendChild(tableBody);
+      document.getElementById("tablecontainer").appendChild(table);
+    }
+
+    var tableData = {{ playerHistory|tojson }};
+    var removeIndexes = [1]
+    var headings = ['Season','Team', 'GP', 'W', 'L', 'W %',
+    'MIN', 'FGM', 'FGA', 'FG %', 'FG3M', 'FG3A', 'FG3%', 'FTM', 'FTA',
+    'FT %', 'OREB', 'DREB', 'REB', 'AST', 'TOV', 'STL', 'BLK', 'BLKA',
+    'PF', 'PFD', 'PTS', '+/-'];
+    const filtered = tableData.map(v => v.filter((_, i) => !removeIndexes.includes(i)))
+    // output: [["b"], ["b"], ["b"]]
+    createTable(filtered, headings);
+
 
     
 
