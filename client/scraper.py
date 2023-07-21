@@ -46,9 +46,9 @@ class NBAScraper:
         return inv_map[playerID]
          
 
-    def get_player_stats(self, playerName):
+    def get_player_stats(self, playerID):
         url = "https://stats.nba.com/stats/playerdashboardbyyearoveryearcombined"
-        jsonData = requests.get(url, headers=self.headers, params=player_payload(self.players[playerName])).json()
+        jsonData = requests.get(url, headers=self.headers, params=player_payload(playerID)).json()
         rows = jsonData['resultSets'][5]['rowSet']
         columns = jsonData['resultSets'][5]['headers']
 

@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.feature_selection import SequentialFeatureSelector
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.svm import SVR
+from sklearn.linear_model import Ridge
 from scraper import NBAScraper
 from sklearn.preprocessing import MinMaxScaler
 
@@ -24,17 +25,18 @@ class Predictor:
         df.drop(["WL", "SEASON_YEAR"], axis=1)
         fulldf = df.copy()
         df = df.dropna()
-        df = pd.get_dummies(df, columns=['OPPONENT', 'TEAM_ABBREVIATION', 'WL'], dtype=np.uint8)
+        df = pd.get_dummies(df, columns=['TEAM_ABBREVIATION', 'WL'], dtype=np.uint8)
         split = TimeSeriesSplit(n_splits=3)
 
 
         svrmod = SVR(kernel="poly")
-        removed_cols = [self.labels[stat], "SEASON_YEAR", "GAME_DATE"]
+        ridgemod = Ridge(alpha=1)
+        removed_cols = [self.labels[stat], "SEASON_YEAR", "GAME_DATE", "OPPONENT"]
         selected_cols = df.columns[~df.columns.isin(removed_cols)]
 
         scaler = MinMaxScaler()
         df.loc[:, selected_cols] = scaler.fit_transform(df[selected_cols])
-        sfs3 = SequentialFeatureSelector(svrmod, n_features_to_select=10, direction="forward", cv=split, n_jobs=6)
+        sfs3 = SequentialFeatureSelector(ridgemod, n_features_to_select=10, direction="forward", cv=split, n_jobs=6)
         sfs3.fit(df[selected_cols], df[self.labels[stat]])
         predictors3 = list(selected_cols[sfs3.get_support()])
 
@@ -56,15 +58,17 @@ class Predictor:
 
             return pd.concat(allpreds)
 
-        predictions3 = backtest(df, svrmod, predictors3)
+        # predictions3 = backtest(df, ridgemod, predictors3)
+        backtest(df, ridgemod, predictors3)
 
-        from sklearn.metrics import mean_squared_error
-        from sklearn.metrics import mean_absolute_error
 
-        print(mean_squared_error(predictions3['actual'], predictions3['prediction']))
-        print(mean_absolute_error(predictions3['actual'], predictions3['prediction']))
+        # from sklearn.metrics import mean_squared_error
+        # from sklearn.metrics import mean_absolute_error
 
-        return svrmod.predict(df[-1:][predictors3])[0]
+        # print(mean_squared_error(predictions3['actual'], predictions3['prediction']))
+        # print(mean_absolute_error(predictions3['actual'], predictions3['prediction']))
+
+        return ridgemod.predict(df[-1:][predictors3])[0]
 
 
 if __name__ == "__main__":

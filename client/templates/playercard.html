@@ -1,0 +1,53 @@
+<div class="" style="padding: 20px;">
+<div class="card" style="width: 18rem; max-height: 50rem ">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm">
+          <img src="https://cdn.nba.com/headshots/nba/latest/1040x760/{{playerID}}.png" alt="Generic placeholder image" style="max-width: 128px; height: auto; padding-top: 20px">
+        </div>
+        <div class="col-sm">
+          <div class="row">
+          <img src="https://cdn.nba.com/logos/nba/{{ playerBio['teamID'] }}/primary/L/logo.svg" alt="Generic placeholder image" style="max-width: 96px; height: auto; padding-top: 5px;">
+        </div>
+        <div class="row">
+          <p style="padding-left: 10px;"> {{ playerBio['team']}}</p>
+        </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="card-body" style="padding-top: 0px;">
+      <h5 class="card-title"> {{playerBio['name'] }} </h5>
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        <h5>
+          <small class="text-muted">Jersey # </small>
+          {{playerBio['number'] }}
+        </h5>
+      </li>
+      <li class="list-group-item">
+        <h5>
+          <small class="text-muted">Position </small>
+          {{playerBio['position'] }}
+        </h5></li>
+      <li class="list-group-item">
+        <h5>
+          <small class="text-muted">Height </small>
+          {{playerBio['height'] }}
+        </h5>
+      </li>
+      <li class="list-group-item">
+        <h5>
+          <small class="text-muted">Weight</small>
+          {{playerBio['weight'] }}
+        </h5></li>
+      <li class="list-group-item">
+        <h5>
+          <small class="text-muted">Country</small>
+          {{playerBio['country'] }}
+        </h5>
+      </li>
+    </ul>
+  </div>
+</div>
