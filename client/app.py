@@ -1,5 +1,6 @@
 import time
 from predictor import Predictor
+import multiprocessing
 from scraper import NBAScraper
 from threading import Thread
 from flask import Flask, url_for, render_template, request, jsonify, make_response, redirect
@@ -45,6 +46,7 @@ def prediction(playerID):
     # result = pred.train_model('pts', playerdf=scraper.get_advanced_player_stats(playerID=playerID)) 
     new_task_id = len(tasks)
     task = Thread(target=run_model, kwargs={'playerID': playerID, 'task_id': new_task_id, 'results': results})
+    task.daemon = True
     task.start()
     tasks.append(task)
     results.append(None)

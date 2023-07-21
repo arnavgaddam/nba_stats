@@ -20,39 +20,13 @@
     {% include "playercard.html" %}
     {% endblock %}
     </div>
-    <div class="col-9">
-      <div class="row">
-      <div class="table-responsive" style="border: 10px" id="tablecontainer"></div>
-    </div>
-    <div class="row" style="padding: 20px">
-        <div id='ptsoutput' class="col-sm">
-          Loading predicted points...
-          <div style="padding: 20px"><div id="loader" class="loader"></div></div>
 
-        </div>
-        <div id='astoutput' class="col-sm">
-          Loading predicted assists...
-          <div style="padding: 20px"><div id="loader" class="loader"></div></div>
-
-          
-        </div>
-        <div id='reboutput' class="col-sm">
-          Loading  rebounds...
-          <div style="padding: 20px"><div id="loader" class="loader"></div></div>
-
-        </div>
-        <div id='fg3output' class="col-sm">
-          Loading predicted 3s made...
-          <div style="padding: 20px"><div id="loader" class="loader"></div></div>
-
-        </div>
-    </div>
+    {% block results %}
+    {% include "resultsview.html" %}
+    {% endblock %}
 
     </div>
-    </div>
-    </div>
 
-    </div>
 
 
 
@@ -72,11 +46,30 @@
           clearInterval(intervalId);
           // window.alert(post['result'][0]);
           resultArray = post['result'];
-          document.getElementById("ptsoutput").innerHTML = parseFloat(resultArray[0]).toFixed() + " Points Made"
-          document.getElementById("astoutput").innerHTML = parseFloat(resultArray[1]).toFixed() + " Assists"
-          document.getElementById("reboutput").innerHTML = parseFloat(resultArray[2]).toFixed() + " Rebounds"
-          document.getElementById("fg3output").innerHTML = parseFloat(resultArray[3]).toFixed() + " 3s Made"
-          document.getElementById("loader").style.display = "none"
+          document.getElementById("ptsoutput").innerHTML = parseFloat(resultArray[0]).toFixed();
+          document.getElementById("astoutput").innerHTML = parseFloat(resultArray[1]).toFixed();
+          document.getElementById("reboutput").innerHTML = parseFloat(resultArray[2]).toFixed();
+          document.getElementById("fg3output").innerHTML = parseFloat(resultArray[3]).toFixed();
+          document.getElementById("ptsdisplay").style.display = "block";
+          document.getElementById("astdisplay").style.display = "block";
+          document.getElementById("rebdisplay").style.display = "block";
+          document.getElementById("fg3display").style.display = "block";
+          document.getElementById("loader").style.display = "none";
+          document.getElementById("loader1").style.display = "none";
+          document.getElementById("loader2").style.display = "none";
+          document.getElementById("loader3").style.display = "none";
+          document.getElementById("rebload").innerHTML = "";
+          document.getElementById("ptsload").innerHTML = "";
+          document.getElementById("astload").innerHTML = "";
+          document.getElementById("fg3load").innerHTML = "";
+
+
+
+
+
+
+
+
         }
         });
     }
